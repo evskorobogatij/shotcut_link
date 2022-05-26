@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { ShortLink } from './../../short-link/entities/short-link.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 @Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid')
@@ -9,4 +10,7 @@ export class User {
 
   @Column({ select: false })
   password: string;
+
+  @OneToMany(() => ShortLink, (link) => link.user)
+  links: string;
 }

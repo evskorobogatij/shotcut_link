@@ -32,4 +32,8 @@ export class UsersService {
       { select: ['id', 'name', 'password'] },
     );
   }
+
+  async findById(id: string): Promise<User | undefined> {
+    return this.usersRepository.findOne(id);
+  }
 }
