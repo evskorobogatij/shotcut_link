@@ -17,11 +17,12 @@ export class ShortLinkController {
   @UseGuards(JwtAuthGuard)
   @Post()
   create(@Body() createShortLinkDto: CreateShortLinkDto, @Request() req) {
-    return this.shortLinkService.create(createShortLinkDto, req.user.sub);
+    return this.shortLinkService.create(createShortLinkDto, req.user.userId);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
-  findAll() {
-    return this.shortLinkService.findAll();
+  findAll(@Request() req) {
+    return this.shortLinkService.findAll(req.user.userId);
   }
 }

@@ -45,7 +45,18 @@ export class ShortLinkService {
     }
   }
 
-  findAll() {
-    return `This action returns all shortLink`;
+  async findAll(userId: string) {
+    console.log('Find for : ', userId);
+    const visits = await this.shortLinkVisitRepository.manager.query(
+      `with visits as ( SELECT short_link_visit.link_id, count(1) cn
+    FROM public.short_link_visit
+    group by short_link_visit.link_id )
+    
+    select short_link.id, short_link.short , short_link.link, coalesce(visits.cn,0) count  from short_link
+    left join visits on (visits.link_id=short_link.id)
+    where user_id=$1`,
+      [userId],
+    );
+    return visits;
   }
 }
