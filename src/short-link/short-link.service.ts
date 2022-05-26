@@ -28,6 +28,15 @@ export class ShortLinkService {
     return { short };
   }
 
+  async getByShort(short: string) {
+    const link = await this.shortLinkRepository.findOne({ short });
+    if (link) {
+      return { link: link.link };
+    } else {
+      link: undefined;
+    }
+  }
+
   findAll() {
     return `This action returns all shortLink`;
   }

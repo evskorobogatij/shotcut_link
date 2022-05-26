@@ -9,5 +9,6 @@ import { UsersModule } from 'src/users/users.module';
   imports: [TypeOrmModule.forFeature([ShortLink]), UsersModule],
   controllers: [ShortLinkController],
   providers: [ShortLinkService],
+  exports: [ShortLinkService],
 })
 export class ShortLinkModule {}
