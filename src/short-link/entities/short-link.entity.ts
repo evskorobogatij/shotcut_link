@@ -5,8 +5,10 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { ShortLinkVisit } from './short-link-visit.entity';
 
 @Entity({ name: 'short_link' })
 export class ShortLink {
@@ -22,6 +24,9 @@ export class ShortLink {
   @ManyToOne(() => User, (user) => user.links)
   @JoinColumn({ name: 'user_id' })
   user: User;
+
+  @OneToMany(() => ShortLinkVisit, (v) => v.link)
+  visits: ShortLinkVisit[];
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp with time zone' })
   create_at: Date;

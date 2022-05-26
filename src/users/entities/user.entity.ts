@@ -12,5 +12,5 @@ export class User {
   password: string;
 
   @OneToMany(() => ShortLink, (link) => link.user)
-  links: string;
+  links: string[];
 }

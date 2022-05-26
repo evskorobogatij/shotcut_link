@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Ip,
   Param,
   Post,
   Request,
@@ -27,8 +28,8 @@ export class AppController {
   }
 
   @Get('s/:short')
-  async go(@Param('short') short: string, @Response() res) {
-    const link = await this.shortLinkService.getByShort(short);
+  async go(@Param('short') short: string, @Response() res, @Ip() ip) {
+    const link = await this.shortLinkService.getByShort(short, ip);
     if (link) {
       return res.redirect(link.link);
     }
