@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+    dev:
+        container_name: short_link_api_dev
+        image: short_link-api-dev:1.0.0
+        build:
+            context: .
+            target: development
+            dockerfile: ./Dockerfile
+        command: npm run start:debug
+        ports:
+            - 8000:8000
+            - 9229:9229
+        networks:
+            - short_link-network
+        volumes:
+            - .:/usr/src/app
+            - /usr/src/app/node_modules
+        restart: unless-stopped
+    prod:
+        container_name: short_link_api_prod
+        image: short_link-api-prod:1.0.0
+        build:
+            context: .
+            target: production
+            dockerfile: ./Dockerfile
+        command: npm run start:prod
+        ports:
+            - 8000:8000
+            - 9229:9229
+        networks:
+            - short_link-network
+        volumes:
+            - .:/usr/src/app
+            - /usr/src/app/node_modules
+        restart: unless-stopped
+
+networks:
+    short_link-network:
