@@ -1,40 +1,70 @@
 version: '3.8'
 
 services:
-    dev:
-        container_name: short_link_api_dev
-        image: short_link-api-dev:1.0.0
-        build:
-            context: .
-            target: development
-            dockerfile: ./Dockerfile
-        command: npm run start:debug
-        ports:
-            - 8000:8000
-            - 9229:9229
-        networks:
-            - short_link-network
-        volumes:
-            - .:/usr/src/app
-            - /usr/src/app/node_modules
-        restart: unless-stopped
-    prod:
-        container_name: short_link_api_prod
-        image: short_link-api-prod:1.0.0
-        build:
-            context: .
-            target: production
-            dockerfile: ./Dockerfile
-        command: npm run start:prod
-        ports:
-            - 8000:8000
-            - 9229:9229
-        networks:
-            - short_link-network
-        volumes:
-            - .:/usr/src/app
-            - /usr/src/app/node_modules
-        restart: unless-stopped
+  postgres:
+    container_name: short_link_postgres_contaiter
+    image: postgres:12
+    environment:
+      POSTGRES_DB: "short_link_docker"
+      POSTGRES_USER: "shortlink"
+      POSTGRES_PASSWORD: "shortlinkpass"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+      - .:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - short_link-network
+
+  pdadmin:
+    container_name: short_link_pgadmin_contaiter
+    image: dpage/pgadmin4:5.7
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "short@test.com"
+      PGADMIN_DEFAULT_PASSWORD: "pgadminpwd"
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    volumes:
+      - ./pgadmin:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    restart: always
+    networks:
+      - short_link-network
+
+  prod:
+    container_name: short_link_api_prod
+    image: short_link-api-prod:1.0.0    
+    build:
+      context: .
+      target: production
+      dockerfile: ./Dockerfile
+    environment:
+      TYPEORM_CONNECTION: "postgres"
+      TYPEORM_HOST: "short_link_postgres_contaiter"
+      TYPEORM_USERNAME: "shortlink"
+      TYPEORM_PASSWORD: "shortlinkpass"
+      TYPEORM_DATABASE: "short_link_docker"
+      TYPEORM_PORT: 5432
+      TYPEORM_SYNCHRONIZE: "false"
+      TYPEORM_LOGGING: "true"
+      TYPEORM_MIGRATIONS: src/migration/**/*.ts
+      TYPEORM_MIGRATIONS_DIR: src/migration/
+      TYPEORM_ENTITIES: src/**/entities/*.entity.ts
+      TYPEORM_ENTITIES_DIR: src/**/entities/
+      APP_PORT: 8000
+      JWT_KEY: hfg98k34ujfldf83434d834r  
+    command: sh -c "yarn migration:run &&  yarn start:prod"
+    ports:
+      - 8000:8000
+      - 9229:9229
+    networks:
+      - short_link-network
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    restart: unless-stopped
 
 networks:
-    short_link-network:
+  short_link-network:
+    driver: bridge
