@@ -25,6 +25,7 @@ RUN yarn install --only=production
 
 COPY . .
 
-COPY --from=development /usr/src/app/dist ./dist
+RUN yarn build
+# COPY /usr/src/app/dist ./dist
 
 CMD ["node", "dist/main"]
